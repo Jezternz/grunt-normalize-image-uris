@@ -1,0 +1,40 @@
+{
+  "name": "grunt-normalize-image-uris",
+  "description": "Normalize all images URI's located in HTML and CSS files to point to a single image directory, also move images into this directory.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/Jezternz/grunt-normalize-image-uris",
+  "author": {
+    "name": "JoshM"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Jezternz/grunt-normalize-image-uris.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Jezternz/grunt-normalize-image-uris/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/Jezternz/grunt-normalize-image-uris/blob/master/LICENSE-MIT"
+    }
+  ],
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "devDependencies": {
+    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-contrib-clean": "~0.4.0",
+    "grunt-contrib-nodeunit": "~0.2.0",
+    "grunt": "~0.4.2"
+  },
+  "peerDependencies": {
+    "grunt": "~0.4.2"
+  },
+  "keywords": [
+    "gruntplugin"
+  ]
+}
