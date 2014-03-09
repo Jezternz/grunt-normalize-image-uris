@@ -10,7 +10,8 @@
 
 var
     path = require("path"),
-    fs = require("fs");
+    fs = require("fs"),
+    url = require("url");
 
 module.exports = function(grunt) {
 
@@ -27,7 +28,7 @@ module.exports = function(grunt) {
         // Iterate over all specified file groups.
         this.files.forEach(function (f)
         {
-            grunt.log.writeln("Starting Grunt Process (Normalize image uris)...");
+            grunt.log.writeln("\nStarting Grunt Process (Normalize image uris)...\n");
 
             // Destination relative url
             var relativeURI = path.join(options.newrelativeuri || f.orig.dest);
@@ -53,18 +54,13 @@ module.exports = function(grunt) {
             moveImages(imagesAr, destinationImageFolder);
 
             // Add new relative uri to images
-            var newImageLocations = imagesAr.map(function(imageUri){ return path.join(relativeURI, path.basename(imageUri)); });
+            var newImageLocations = imagesAr.map(function (imageUri) { return path.join(relativeURI, path.basename(imageUri)); });
 
             // Print a success message.
             grunt.log.writeln(
-                "--------Completed Grunt Process!--------\n\n" +
-                "--------Found Images:--------\n\n" +
-                imagesAr.map(function (o, i) { return o + " -> " + newImageLocations[i]; }).join("\n") + '\n\n' +
-                "--------Relative Directory:-------- \n'" + f.cwd + "'\n\n" +
-                "--------Destination:-------- \n'" + f.orig.dest + "'\n\n" +
-                "--------Target Files:-------- \n\n" +
-                fileList.join("\n") +
-                "\n\n"
+                "--------Completed Grunt Process!--------\n" +
+                "* " + fileList.length + " source files scanned\n" +
+                "* " + imagesAr.length + " images found"
             );
 
         });
@@ -114,9 +110,16 @@ module.exports = function(grunt) {
 
     var ensureDestinationFolder = function(destinationFolder)
     {
-        if (!fs.exists(destinationFolder))
+        try
         {
-            fs.mkdirSync(destinationFolder);
+            if (!fs.existsSync(destinationFolder))
+            {
+                fs.mkdirSync(destinationFolder);
+            }
+        }
+        catch(er)
+        {
+            grunt.log.writeln("Failed to create new image directory reason(" + er + ")");
         }
     }
 
@@ -155,7 +158,7 @@ module.exports = function(grunt) {
                 // Now ensure the uris are replaced with new ones
                 matchingImages.forEach(function (imageUri)
                 {
-                    var newFileUri = path.normalize(path.join(newRelativeDir, path.basename(imageUri)));
+                    var newFileUri = url.resolve(newRelativeDir.replace("\\", "/"), path.basename(imageUri));
                     newFileContent = newFileContent.replace(new RegExp(imageUri, 'gim'), newFileUri);
                 });
 
@@ -164,12 +167,16 @@ module.exports = function(grunt) {
 
                 // Convert relative uris to paths (taking into consideration the relativity of the current file)
                 var dirName = path.dirname(fileLocation);
-                imagePaths = matchingImages.map(function (a) { return path.normalize(path.join(dirName, a)); });
+                imagePaths = matchingImages.map(function (a) { return path.join(dirName, a); });
 
                 grunt.log.writeln("[Success][ " + matchingImages.length + " Matches ] " + fileLocation);
-                if(ignoredImages.length > 0)
+                if (imagePaths.length > 0)
                 {
-                    grunt.log.writeln("[^] Ignored image extensions: " + ignoredImages.join(","));
+                    grunt.log.writeln("[^] Found images (" + dirName + "): \n    " + imagePaths.join("\n    "));
+                }
+                if (ignoredImages.length > 0)
+                {
+                    grunt.log.writeln("[^] Ignored image extensions: \n    " + ignoredImages.join("\n    "));
                 }
 
             }
@@ -225,24 +232,37 @@ module.exports = function(grunt) {
     // Remove any folders that become empty
     var moveImages = function(imageFileAr, destinationFolder)
     {
+        grunt.log.writeln("Copying images to new directories:");
         imageFileAr.forEach(function (fOldDir)
         {
             var fNewDir;
             try
             {
                 fNewDir = path.normalize(path.join(destinationFolder, path.basename(fOldDir)));
+                if (path.resolve(process.cwd(), fNewDir) === path.resolve(process.cwd(), fOldDir))
+                {
+                    // New and old are same, don't worry.
+                    return;
+                }
                 if (!fs.existsSync(fOldDir))
                 {
-                    grunt.log.writeln("failed to move file, '" + fOldDir + "'  does not exist.");
+                    grunt.log.writeln("    [Failed - not found] " + fOldDir);
                 }
                 else
                 {
                     fs.renameSync(fOldDir, fNewDir);
+
+                    // if old directory is empty, remove it
+                    var oldDir = path.dirname(fOldDir);
+                    if(fs.readdirSync(oldDir).length === 0)
+                    {
+                        fs.rmdirSync(oldDir);
+                    }
                 }
             }
             catch(er)
             {
-                grunt.log.writeln("Failed to move file '" + fOldDir + "' to '" + fNewDir + "'. (reason: " + er + ")");
+                grunt.log.writeln("    [Failed - not found] " + fOldDir + " reason(" + er + ")");
             }
         });
     }
