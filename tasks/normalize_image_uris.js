@@ -21,7 +21,6 @@ module.exports = function(grunt) {
     grunt.registerMultiTask('normalizeimageuris', 'Normalize all images URI\'s located in HTML and CSS files to point to a single image directory, also move images into this directory.', function() {
         // Merge task-specific and/or target-specific options with these defaults.
         var options = this.options({
-            "relativeuri": false,
             "validformats": ["png", "gif", "jpg", "jpeg", "bmp"]
         });
 
