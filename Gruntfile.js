@@ -29,22 +29,16 @@ module.exports = function(grunt) {
     },
 
     // Configuration to be run (and then tested).
-    normalize_image_uris: {
+    normalizeimageuris: {
       default_options: {
         options: {
         },
-        files: {
-          'tmp/default_options': ['test/fixtures/testing', 'test/fixtures/123'],
-        },
+        files: [],
       },
       custom_options: {
         options: {
-          separator: ': ',
-          punctuation: ' !!!',
         },
-        files: {
-          'tmp/custom_options': ['test/fixtures/testing', 'test/fixtures/123'],
-        },
+        files: [],
       },
     },
 
