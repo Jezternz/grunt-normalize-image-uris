@@ -1,7 +1,10 @@
-<<<<<<< HEAD
 # grunt-normalize-image-uris
 
-> Normalize all images URI's located in HTML and CSS files to point to a single image directory, also move images into this directory.
+> This grunt plugin allows you to select HTML & CSS Files (or directories) and then will scan these files for images. At present this means < img src="" > for html files and background: url() or background-image: url() for css and html files. The plugin will then update all image URLs with a new URL destination, the plugin will then find all these images and move them to their new location.
+
+> Why would you want to do this? Say you want to minify css + combine all your images to make sprites, but they are spread out across all kinds of vendor folders in css files scattered all over the place. Running this plugin first will update all your css files, move the images, ready for both CSS minification + Sprite plugins to do their thing.
+
+> *Note Typically this should be run before CSS Minification + Before Image spriting.
 
 ## Getting Started
 This plugin requires Grunt `~0.4.2`
@@ -27,70 +30,33 @@ In your project's Gruntfile, add a section named `normalize_image_uris` to the d
 grunt.initConfig({
   normalize_image_uris: {
     options: {
-      // Task-specific options go here.
+      "validformats": ["png", "gif", "jpg", "jpeg", "bmp"]
     },
-    your_target: {
-      // Target-specific file lists and/or options go here.
-    },
+    "files":[]
   },
 });
 ```
 
 ### Options
 
-#### options.separator
-Type: `String`
-Default value: `',  '`
+#### options.validformats
+Type: `Array`
+Default value: `["png", "gif", "jpg", "jpeg", "bmp"]`
 
-A string value that is used to do something with whatever.
-
-#### options.punctuation
-Type: `String`
-Default value: `'.'`
-
-A string value that is used to do something else with whatever else.
+An array of image extensions to match against.
 
 ### Usage Examples
 
 #### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
+In this example, all css and htm files inside "temp/" are scanned, all the image uris are replaced with "images/{image-name}", the actual image files are moved into the images/ folder...
 
 ```js
 grunt.initConfig({
   normalize_image_uris: {
-    options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
+    "files":[{ "cwd": "temp/", "src": ["**/**/*.css", "**/**/*.htm"], "dest": "images/"}]
+  }
 });
 ```
-
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
-
-```js
-grunt.initConfig({
-  normalize_image_uris: {
-    options: {
-      separator: ': ',
-      punctuation: ' !!!',
-    },
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-});
-```
-
-## Contributing
-In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
-_(Nothing yet)_
-=======
-grunt-normalize-image-uris
-==========================
-
-Normalize all images URI's located in HTML and CSS files to point to a single image directory, also move images into this directory.
->>>>>>> 06cea88c9c4f96c1a19cb01e23c92c516f03f6f9
+0.1 - Initial commit
